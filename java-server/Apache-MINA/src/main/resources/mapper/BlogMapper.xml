@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mina.ParaMapper.Enity">
+    <!--查询部分-->
+    <!--查询车辆的总数-->
+    <select id="carNumber" resultType="com.mina.Entity.car">
+        select * from car where car_id = 2020120401;
+    </select>
+    <!--查询bus的总数方法一-->
+    <select id="busNumberA" resultType="int">
+        select count(0) from bus ;
+    </select>
+<!--查询bus的总数方法二-->
+    <select id="busNumberB" resultType="int">
+        select count(0) from car where car_type = 'bus';
+    </select>
+
+<!--多表查询-->
+    <select id="CarCondition" resultMap="ConditionMap">
+        select * from car
+        left join attribute on car.att_id = attribute.att_id
+        where colour = '黄' and carriage = '2' and speed ='100';
+    </select>
+
+<!--创建一个resultMap-->
+    <resultMap id="ConditionMap" type="com.mina.Entity.car">
+        <id property="car_id" column="car_id"/>
+        <result property="car_type" column="car_type"/>
+        <result property="sub_id" column="sub_id"/>
+        <result property="att_id" column="att_id"/>
+        <association property="attribute" javaType="com.mina.Entity.attribute">
+            <id property="att_id" column="att_id"/>
+            <result property="wheel" column="wheel"/>
+            <result property="dynamic_system" column="dynamic_system"/>
+            <result property="exhaust_system" column="exhaust_system"/>
+            <result property="seating_capacity" column="seating_capacity"/>
+            <result property="colour" column="colour"/>
+            <result property="car_door" column="car_door"/>
+            <result property="lighting" column="lighting"/>
+            <result property="Manual_transmission" column="Manual_transmission"/>
+            <result property="car_length" column="car_length"/>
+            <result property="Car_width" column="Car_width"/>
+            <result property="car_taller" column="car_taller"/>
+            <result property="car_number" column="car_number"/>
+            <result property="carriage" column="carriage"/>
+            <result property="speed" column="speed"/>
+        </association>
+    </resultMap>
+
+
+    <!--创建一个子查询 子查询查出来的数据只能是唯一的-->
+    <select id = "Subquery" resultType="com.mina.Entity.attribute">
+        select  * from attribute
+        where attribute.att_id =(select car_id from car where car_type ='bus');
+    </select>
+
+<!--插入-->
+    <insert id="insertcar" parameterType="com.mina.Entity.car">
+        insert into car (car_id, car_type, sub_id, att_id)
+        values (#{car_id},#{car_type},#{sub_id}, #{att_id})
+    </insert>
+
+<!--更新-->
+    <update id="updatacar" parameterType="com.mina.Entity.car">
+        update car set
+        car_type = #{car_type},
+        sub_id = #{sub_id},
+        att_id = #{att_id}
+        where car_id = #{car_id}
+
+    </update>
+
+<!--删除-->
+    <delete id="deletecar" parameterType="com.mina.Entity.car">
+        delete from car where car_id = #{car_id}
+    </delete>
+</mapper>
